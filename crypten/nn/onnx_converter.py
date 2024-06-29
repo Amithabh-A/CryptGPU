@@ -36,6 +36,7 @@ try:
 except ImportError:
     TF_AND_TF2ONNX = False
 
+_OPSET_VERSION = 17 
 
 def from_pytorch(pytorch_model, dummy_input):
     """
@@ -154,7 +155,7 @@ class FromOnnx:
         self.onnx_model = onnx_model
 
         self.all_parameters = {
-            t.name: torch.from_numpy(numpy_helper.to_array(t))
+            t.name: torch.from_numpy(numpy_helper.to_array(t).copy())
             for t in onnx_model.graph.initializer
         }
 
