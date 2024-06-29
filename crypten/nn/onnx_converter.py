@@ -12,7 +12,16 @@ from collections import OrderedDict
 import onnx
 import torch
 import torch.onnx.symbolic_helper as sym_help
-# import torch.onnx.symbolic_registry as sym_registry
+
+try:
+    import torch.onnx.symbolic_registry as sym_registry
+    SYM_REGISTRY = True
+
+except ImportError:
+    from torch.onnx._internal.registration import registry  # noqa
+
+    SYM_REGISTRY = False
+
 import torch.onnx.utils
 from onnx import numpy_helper
 
@@ -344,24 +353,39 @@ def _update_onnx_symbolic_registry():
     Updates the ONNX symbolic registry for operators that need a CrypTen-specific
     implementation and custom operators.
     """
-    for version_key, version_val in sym_registry._registry.items():
-        for function_key in version_val.keys():
-            if function_key == "softmax":
-                sym_registry._registry[version_key][
-                    function_key
-                ] = _onnx_crypten_softmax
-            if function_key == "log_softmax":
-                sym_registry._registry[version_key][
-                    function_key
-                ] = _onnx_crypten_logsoftmax
-            if function_key == "dropout":
-                sym_registry._registry[version_key][
-                    function_key
-                ] = _onnx_crypten_dropout
-            if function_key == "feature_dropout":
-                sym_registry._registry[version_key][
-                    function_key
-                ] = _onnx_crypten_feature_dropout
+    if SYM_REGISTRY:
+        for version_key, version_val in sym_registry._registry.items():
+            for function_key in version_val.keys():
+                if function_key == "softmax":
+                    sym_registry._registry[version_key][
+                        function_key
+                    ] = _onnx_crypten_softmax
+                if function_key == "log_softmax":
+                    sym_registry._registry[version_key][
+                        function_key
+                    ] = _onnx_crypten_logsoftmax
+                if function_key == "dropout":
+                    sym_registry._registry[version_key][
+                        function_key
+                    ] = _onnx_crypten_dropout
+                if function_key == "feature_dropout":
+                    sym_registry._registry[version_key][
+                        function_key
+                    ] = _onnx_crypten_feature_dropout
+    else:
+        # Update ONNX symbolic registry using torch.onnx.register_custom_op_symbolic
+        torch.onnx.register_custom_op_symbolic(
+            "aten::softmax", _onnx_crypten_softmax, _OPSET_VERSION
+        )
+        torch.onnx.register_custom_op_symbolic(
+            "aten::log_softmax", _onnx_crypten_logsoftmax, _OPSET_VERSION
+        )
+        torch.onnx.register_custom_op_symbolic(
+            "aten::dropout", _onnx_crypten_dropout, _OPSET_VERSION
+        )
+        torch.onnx.register_custom_op_symbolic(
+            "aten::feature_dropout", _onnx_crypten_feature_dropout, _OPSET_VERSION
+        )
 
 
 @sym_help.parse_args("v", "i", "none")
