@@ -20,7 +20,7 @@ import warnings
 from contextlib import closing, contextmanager
 
 import torch
-from torch._utils_internal import get_source_lines_and_file
+# from torch._utils_internal import get_source_lines_and_file
 from torch.serialization import (
     _check_seekable,
     _get_restore_location,

@@ -12,7 +12,7 @@ from collections import OrderedDict
 import onnx
 import torch
 import torch.onnx.symbolic_helper as sym_help
-import torch.onnx.symbolic_registry as sym_registry
+# import torch.onnx.symbolic_registry as sym_registry
 import torch.onnx.utils
 from onnx import numpy_helper
 
