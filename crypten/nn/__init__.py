@@ -6,7 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from .loss import CrossEntropyLoss
+from .loss import CrossEntropyLoss, MSELoss
 from .module import (
     Add,
     AvgPool2d,
@@ -85,7 +85,7 @@ __all__ = [
     # "MaxPool2d",
     "Mean",
     "Module",
-    # "MSELoss",
+    "MSELoss",
     "ReLU",
     "Reshape",
     "Sequential",

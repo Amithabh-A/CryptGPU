@@ -48,6 +48,25 @@ class _Loss(Module):
 
         return forward_function
 
+class MSELoss(_Loss):
+    r"""
+    Creates a criterion that measures the mean squared error (squared L2 norm) between
+    each element in the prediction :math:`x` and target :math:`y`.
+
+    The loss can be described as:
+
+    .. math::
+        \ell(x, y) = mean(L) = mean(\{l_1,\dots,l_N\}^\top), \quad
+        l_n = (x_n - y_n)^2,
+
+    where :math:`N` is the batch size, :math:`x` and :math:`y` are tensors of
+    arbitrary shapes with a total of :math:`n` elements each.
+    """  # noqa: W605
+
+    def forward(self, x, y):
+        assert x.size() == y.size(), "input and target must have the same size"
+        return (x - y).square().mean()
+
 
 class CrossEntropyLoss(_Loss):
     r"""
